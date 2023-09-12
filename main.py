@@ -50,4 +50,123 @@ class Account:
         return self.deposit
 
 
+def intro():
+    print("\t\t\t\t**********************")
+    print("\t\t\t\tBANK MANAGEMENT SYSTEM")
+    print("\t\t\t\t**********************")
+
+    input("Press Enter To Contiune: ")
+
+
+def writeAccount():
+    account = Account()
+    account.createAccount()
+    writeAccountsFile(account)
+
+
+def display():
+    file = pathlib.Path("accounts.data")
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        mylist = pickle.load(infile)
+        for item in mylist:
+            print(item.accNo, " ", item.name, " ", item.type, " ", item.deposit)
+        infile.close()
+    else:
+        print("No records to display")
+
+
+def displaySp(num):
+    file = pathlib.Path("accounts.data")
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        mylist = pickle.load(infile)
+        infile.close()
+        found = False
+        for item in mylist:
+            if item.accNo == num:
+                print("Your account balance is = ", item.deposit)
+                found = True
+    else:
+        print("No records to Search")
+    if not found:
+        print("No existing record with this number")
+
+
+def depositAndWithradw(num1, num2):
+    file = pathlib.Path('accounts.data')
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        mylist = pickle.load(infile)
+        infile.close()
+        os.remove('accounts.data')
+        for item in mylist:
+            if item.accNo == num1:
+                if num2 == 1:
+                    amount = int(input("Enter the amount to deposit: "))
+                    item.deposit += amount
+                    print("Your account is updated")
+                elif num2 == 2:
+                    amount = int(input("Enter the amount to withdraw"))
+                    if amount <= item.deposit:
+                        item.deposit -= amount
+                    else:
+                        print("You cannot withdraw arger amount")
+    else:
+        print("No records to search")
+    outfile = open("newaccounts.data", "wb")
+    pickle.dump(mylist, outfile)
+    outfile.close()
+    os.rename('newaccounts.data', 'accounts.data')
+
+
+def deleteAccount(num):
+    file = pathlib.Path('accounts.data')
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        oldlist = pickle.load(infile)
+        infile.close()
+        newlist = []
+        for item in oldlist:
+            if item.accNo != num:
+                newlist.append(item)
+        os.remove('accounts.data')
+        outfile = open('newaccounts.data', 'wb')
+        pickle.dump(newlist, outfile)
+        outfile.close()
+        os.rename('newaccounts.data', 'accounts.data')
+
+
+def modifyAccount(num):
+    file = pathlib.Path('accounts.data')
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        oldlist = pickle.load(infile)
+        infile.close()
+        os.remove('accounts.data')
+        for item in oldlist:
+            if item.accNo != num:
+                item.name = input("Enter the account holder name: ")
+                item.type = input("Enter the account Type: ")
+                item.deposit = int(input("Enter the Amount: "))
+        outfile = open('newaccounts.data', 'wb')
+        pickle.dump(oldlist, outfile)
+        outfile.close()
+        os.rename('newaccounts.data', 'accounts.data')
+
+
+def writeAccountsFile(account):
+    file = pathlib.Path('accounts.data')
+    if file.exists():
+        infile = open('accounts.data', 'rb')
+        oldlist = pickle.load(infile)
+        oldlist.append(account)
+        infile.close()
+        os.remove('accounts.data')
+    else:
+        oldlist = [account]
+    outfile = open('newaccounts.data', 'wb')
+    pickle.dump(oldlist, outfile)
+    outfile.close()
+    os.rename('newaccounts.data', 'accounts.data')
 
